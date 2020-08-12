@@ -1,0 +1,29 @@
+{
+    "configurations": [
+        {
+            "name": "Win32",
+            "includePath": [
+                "${workspaceFolder}/**",
+                "L:\\Program Files\\arduino\\arduino-nightly",
+                "L:\\Program Files\\arduino\\arduino-nightly\\tools\\**",
+                "L:\\Program Files\\arduino\\arduino-nightly\\hardware\\arduino\\avr\\**",
+                "L:\\Program Files\\arduino\\arduino-nightly\\hardware\\tools\\**",
+                "L:\\Program Files\\arduino\\arduino-nightly\\hardware\\arduino\\avr\\cores\\arduino"
+            ],
+            "defines": [
+                "_DEBUG",
+                "UNICODE",
+                "_UNICODE",
+                "USBCON"
+            ],
+            "forcedInclude": [
+                "L:\\Program Files\\arduino\\arduino-nightly\\hardware\\arduino\\avr\\cores\\arduino\\Arduino.h"
+            ],
+            "intelliSenseMode": "msvc-x64",
+            "compilerPath": "L:\\Program Files\\arduino\\arduino-nightly\\hardware\\tools\\avr\\bin\\avr-gcc.exe",
+            "cStandard": "c11",
+            "cppStandard": "c++17"
+        }
+    ],
+    "version": 4
+}
