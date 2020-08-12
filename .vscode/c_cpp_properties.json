@@ -19,10 +19,9 @@
             "forcedInclude": [
                 "C:\\Program Files (x86)\\Arduino\\hardware\\arduino\\avr\\cores\\arduino\\Arduino.h"
             ],
-            "intelliSenseMode": "msvc-x64",
             "compilerPath": "C:\\Program Files (x86)\\Arduino\\hardware\\tools\\avr\\bin\\avr-gcc.exe",
             "cStandard": "c11",
-            "cppStandard": "c++17",
+            "cppStandard": "c++17"
             
                 
             

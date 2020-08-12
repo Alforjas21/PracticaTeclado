@@ -8,6 +8,8 @@
 #define CONFIG_TCCS_PIN       11  // SPI CS
 #define CONFIG_TCDO_PIN       12  // SPI MISO
 
+#define factorConversion 300
+
 #define duracionIntro 4000
 #define periodoCalefaccion 1000
 #define debugMenu 1
@@ -52,7 +54,9 @@ float tempActual1, tempActual2, tempActual3;
 float consignaTemp1, consignaTemp2, consignaTemp3;
 int8_t pulsacion, nEntrada;
 int8_t estadoMenu, pantallaMenu;
-int consignaVelocidad;
+//valor en milisegundos del retardo entre pasos del motor
+int consignaVelocidad; 
+
 
 
 
@@ -307,7 +311,7 @@ void loop(){
             tiempoMenu = tiempoActual;
             }
             if(pulsacion == TECLADO_ENTER) {estadoMenu = 4;
-            consignaVelocidad = nEntrada;
+            consignaVelocidad = factorConversion/nEntrada;  
             nEntrada = 0;
             lcd.clearNoDelay();
             pantallaMenu = 4;
