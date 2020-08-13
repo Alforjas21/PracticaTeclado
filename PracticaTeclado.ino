@@ -156,7 +156,7 @@ void loop(){
             }
         }
     }
-    else {
+    if (!calefaccionON) {
         //Apagamos la resistencia 1, 2 y 3 si procede
         if (valorTermo1 != LOW){ 
             digitalWrite(CALENTADOR1_PIN,LOW);
@@ -184,7 +184,7 @@ void loop(){
                 estadoMenu = estadoAnterior;
                 lcd.clearNoDelay();
                 pantallaMenu = pantallaAnterior;
-                tecladoON = 0;
+                tecladoON,nEntrada = 0;
             break;      
             case '0':
                 nEntrada = nEntrada*10;
@@ -310,23 +310,21 @@ void loop(){
     switch(estadoMenu) {
         case 0: //INTRODUCCION CON ESPERA
             if (tiempoActual-tiempoMenu >= duracionIntro){
+                estadoMenu = 1;
                 lcd.clearNoDelay();
                 pantallaMenu = 1;
                 tiempoMenu = tiempoActual;
-                estadoMenu = 1;
             } 
         break;
         case 1: //MENU SELECCION AUTO-MANUAL
             if(pulsacion == '1') {
                 lcd.clearNoDelay();
                 pantallaMenu,estadoMenu = 2;
-                pulsacion = 0;
                 tiempoMenu = tiempoActual;
             }
             if(pulsacion == '2') {
                 lcd.clearNoDelay();
                 pantallaMenu, estadoMenu = 3;
-                pulsacion = 0;
                 tiempoMenu = tiempoActual;
             }
         break;
@@ -392,6 +390,7 @@ void loop(){
             pantallaSiguiente = 1;
             tecladoON = 1;
         break;
+        pulsacion = 0;
     }
 
 }
