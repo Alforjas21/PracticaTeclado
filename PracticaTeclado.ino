@@ -109,7 +109,7 @@ void loop(){
 
 
     //Gestionar termopares
-    if (calefaccionON == 1){
+    if (calefaccionON){
          if (periodoCalefaccion <=(tiempoActual-tiempoCalefaccion)){
             tiempoCalefaccion = tiempoActual;
             tempActual1 = thermocouple1.readCelsius();
@@ -148,8 +148,8 @@ void loop(){
             }
         }
     }
-    if (calefaccionON == 0){
-        //Apagamos la resistencia 1, 2 y 3
+    else {
+        //Apagamos la resistencia 1, 2 y 3 si procede
         if (valorTermo1 != LOW){ 
             digitalWrite(PIN_termo1,LOW);
             valorTermo1 = LOW;
@@ -165,85 +165,82 @@ void loop(){
     }
     
     //Gestionar motor
+
     //Gestionar entrada usuario(Serie)
+
     //Gestionar entrada usuario (teclado)
     pulsacion=teclado.comprueba();
     if (tecladoON) {
-    switch(pulsacion){ 
-                case TECLADO_ATRAS:
-                    estadoMenu = estadoAnterior;
-                    lcd.clearNoDelay();
-                    pantallaMenu = pantallaAnterior;
-                    tiempoMenu = tiempoActual;
-                    tecladoON = 0;
-                    pulsacion = 0;  
-
-                break;      
-                case '0':
-                    nEntrada = nEntrada*10;
-                    lcd.print(0);
-                break;
-                case '1':
-                    nEntrada = nEntrada*10 +1;
-                    lcd.print(1);
-                break;
-                case '2':
-                    nEntrada = nEntrada*10 +2;
-                    lcd.print(2);
-                break;
-                case '3':
-                    nEntrada = nEntrada*10 +3;
-                    lcd.print(3);
-                break;
-                case '4':
-                    nEntrada = nEntrada*10 +4;
-                    lcd.print(4);
-                break;
-                case '5':
-                    nEntrada = nEntrada*10 +5;
-                    lcd.print(5);
-                break;
-                case '6':
-                    nEntrada = nEntrada*10 +6;
-                    lcd.print(6);
-                break;
-                case '7':
-                    nEntrada = nEntrada*10 +7;
-                    lcd.print(7);
-                break;
-                case '8':
-                    nEntrada = nEntrada*10 +8;
-                    lcd.print(8);
-                break;
-                case '9':
-                    nEntrada = nEntrada*10 +9;
-                    lcd.print(9);
-                break;
-                case TECLADO_BORRAR:              
-                    nEntrada = nEntrada / 10;
-                    lcd.setCursor(0,1);
-                    lcd.print("        ");
-                    lcd.setCursor(0,1);
-                    if (nEntrada > 0) lcd.print(nEntrada);
-                break;
-                case TECLADO_ENTER:              
-                    estadoMenu = estadoSiguiente;
-                    if (introducirVelocidad){
-                    consignaVelocidad = factorConversion/nEntrada;  
-                    introducirVelocidad = 0;
-                    }
-                    if (introducirTemperatura){
-                    consignaTemp1, consignaTemp2, consignaTemp3 = nEntrada;  
-                    introducirTemperatura = 0;
-                    }
-                    nEntrada = 0;
-                    lcd.clearNoDelay();
-                    pantallaMenu = pantallaSiguiente;
-                    tiempoMenu = tiempoActual;
-                    tecladoON = 0;
-                    pulsacion = 0; 
-                break;
-            }
+        switch(pulsacion){ 
+            case TECLADO_ATRAS:
+                estadoMenu = estadoAnterior;
+                lcd.clearNoDelay();
+                pantallaMenu = pantallaAnterior;
+                tecladoON = 0;
+            break;      
+            case '0':
+                nEntrada = nEntrada*10;
+                lcd.print(0);
+            break;
+            case '1':
+                nEntrada = nEntrada*10 +1;
+                lcd.print(1);
+            break;
+            case '2':
+                nEntrada = nEntrada*10 +2;
+                lcd.print(2);
+            break;
+            case '3':
+                nEntrada = nEntrada*10 +3;
+                lcd.print(3);
+            break;
+            case '4':
+                nEntrada = nEntrada*10 +4;
+                lcd.print(4);
+            break;
+            case '5':
+                nEntrada = nEntrada*10 +5;
+                lcd.print(5);
+            break;
+            case '6':
+                nEntrada = nEntrada*10 +6;
+                lcd.print(6);
+            break;
+            case '7':
+                nEntrada = nEntrada*10 +7;
+                lcd.print(7);
+            break;
+            case '8':
+                nEntrada = nEntrada*10 +8;
+                lcd.print(8);
+            break;
+            case '9':
+                nEntrada = nEntrada*10 +9;
+                lcd.print(9);
+            break;
+            case TECLADO_BORRAR:              
+                nEntrada = nEntrada / 10;
+                lcd.setCursor(0,1);
+                lcd.print("        ");
+                lcd.setCursor(0,1);
+                if (nEntrada > 0) lcd.print(nEntrada);
+            break;
+            case TECLADO_ENTER:
+                estadoMenu = estadoSiguiente;
+                if (introducirVelocidad){
+                consignaVelocidad = factorConversion/nEntrada;
+                introducirVelocidad = 0;
+                }
+                if (introducirTemperatura){
+                consignaTemp1, consignaTemp2, consignaTemp3 = nEntrada;
+                introducirTemperatura = 0;
+                }
+                nEntrada = 0;
+                lcd.clearNoDelay();
+                pantallaMenu = pantallaSiguiente;
+                tecladoON = 0;
+            break;
+        }
         tiempoMenu = tiempoActual;
         pulsacion = 0;
     }
@@ -301,35 +298,34 @@ void loop(){
 
         break;
     }
+    //Gestionar flujo de menu
     switch(estadoMenu) {
         case 0: //INTRODUCCION CON ESPERA
             if (tiempoActual-tiempoMenu >= duracionIntro){
-                estadoMenu = 1;
                 lcd.clearNoDelay();
                 pantallaMenu = 1;
                 tiempoMenu = tiempoActual;
+                estadoMenu = 1;
             } 
         break;
         case 1: //MENU SELECCION AUTO-MANUAL
-            
-            if(pulsacion == '1') {estadoMenu = 2;
-            lcd.clearNoDelay();
-            pantallaMenu = 2;
-            tiempoMenu = tiempoActual;
+            if(pulsacion == '1') {
+                lcd.clearNoDelay();
+                pantallaMenu,estadoMenu = 2;
+                pulsacion = 0;
+                tiempoMenu = tiempoActual;
             }
-            if(pulsacion == '2') {estadoMenu = 3;
-            lcd.clearNoDelay();
-            pantallaMenu = 3;
-            tiempoMenu = tiempoActual;
-            //tecladoON = 1;
+            if(pulsacion == '2') {
+                lcd.clearNoDelay();
+                pantallaMenu, estadoMenu = 3;
+                pulsacion = 0;
+                tiempoMenu = tiempoActual;
             }
-            pulsacion = 0;
         break;
         case 2: //MENU AUTO
             estadoAnterior   = 1;
             pantallaAnterior = 1;
             tecladoON = 1;
-            pulsacion = 0;
         break;
         case 3: //MENU MANUAL CONSIGNA VELOCIDAD MAX:14 caracteres
             estadoAnterior    = 1;
