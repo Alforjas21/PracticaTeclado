@@ -328,42 +328,61 @@ void loop(){
             tecladoON = 1;
         break;
         case 3: //MENU MANUAL CONSIGNA VELOCIDAD MAX:14 caracteres
-            estadoAnterior    = 1;
-            pantallaAnterior  = 1;
-            estadoSiguiente   = 4;
+            estadoAnterior = 1;
+            pantallaAnterior = 1;
+            estadoSiguiente = 4;
             pantallaSiguiente = 4;
             introducirVelocidad = 1;
             tecladoON = 1;
-            pulsacion = 0;
-            
         case 4: //MENU MANUAL CONSIGNA TEMPERATURA 
             estadoAnterior = 3;
-            estadoSiguiente = 5;
             pantallaAnterior = 3;
+            estadoSiguiente = 5;
             pantallaSiguiente = 5;
             introducirTemperatura = 1;
             tecladoON = 1;
-            pulsacion = 0;
         break;
         case 5: //MENU ¿COMENZAR OPERACIÓN?
-
-            pulsacion = 0;
+            estadoAnterior = 1;
+            pantallaAnterior = 1;
+            estadoSiguiente = 6;
+            pantallaSiguiente = 6;
+            tecladoON = 1;
         break;
-        case 6:
-            pulsacion = 0;
-        break;
-        case 7:
-            pulsacion = 0;
-        break;
-        case 8:
-            pulsacion = 0;
-        break;
-        case 9:
-            pulsacion = 0;
-        break;
-        case 10:
-            pulsacion = 0;
-        break;    
+         case 6: 
+            estadoAnterior = 1;
+            pantallaAnterior = 1;
+            estadoSiguiente = 1;
+            pantallaSiguiente = 1;
+            tecladoON = 1;
+        break;        
+        case 7: 
+            estadoAnterior = 1;
+            pantallaAnterior = 1;
+            estadoSiguiente = 1;
+            pantallaSiguiente = 1;
+            tecladoON = 1;
+        break;        
+        case 8: 
+            estadoAnterior = 1;
+            pantallaAnterior = 1;
+            estadoSiguiente = 1;
+            pantallaSiguiente = 1;
+            tecladoON = 1;
+        break;        
+        case 9: 
+            estadoAnterior = 1;
+            pantallaAnterior = 1;
+            estadoSiguiente = 1;
+            pantallaSiguiente = 1;
+            tecladoON = 1;
+        break;        
+        case 10: 
+            estadoAnterior = 1;
+            pantallaAnterior = 1;
+            estadoSiguiente = 1;
+            pantallaSiguiente = 1;
+            tecladoON = 1;
     }
 
 }
