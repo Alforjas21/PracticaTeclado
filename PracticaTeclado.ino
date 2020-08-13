@@ -1,20 +1,33 @@
 //Codigo Principal Proyecto extrusor
 
-//Defines
-#define PIN_termo1 7
-#define PIN_termo2 8
-#define PIN_termo3 9
-#define CONFIG_TCSCK_PIN      10  // SPI SCK
-#define CONFIG_TCCS_PIN       11  // SPI CS
-#define CONFIG_TCDO_PIN       12  // SPI MISO
+//Pines
+#define CALENTADOR1_PIN 7
+#define CALENTADOR2_PIN 8
+#define CALENTADOR3_PIN 9
+#define CONFIG_TERMO1_SCK_PIN      10  // SPI SCK
+#define CONFIG_TERMO1_CS_PIN       11  // SPI CS
+#define CONFIG_TERMO1_DO_PIN       12  // SPI MISO
+#define CONFIG_MOTOR_PSO_PIN    42
+#define CONFIG_MOTOR_DIR_PIN    43
+//  CONFIG_I2C_PIN1 20
+//  CONFIG_I2C_PIN2 21
+#define TECLADO_F1_PIN  28
+#define TECLADO_F2_PIN  29
+#define TECLADO_F3_PIN  23
+#define TECLADO_F4_PIN  22
+#define TECLADO_C1_PIN  26
+#define TECLADO_C2_PIN  27
+#define TECLADO_C3_PIN  24
+#define TECLADO_C4_PIN  25
 
+
+//Defines
 #define factorConversion 300
 
 #define duracionIntro 4000
 #define periodoCalefaccion 1000
 #define debugMenu 1
 #define pantallaDelay 2
-
 
 #define FLECHA_ARRIBA 0x5E
 #define FLECHA_ABAJO 0x76
@@ -25,6 +38,7 @@
 #define TECLADO_BORRAR 'i'
 #define TECLADO_ABAJO 'b'
 #define TECLADO_PUNTO '.'
+#define TECLADO_INPUT_STRING "789s456b123d.0ei"
 
 //Inclusiones
 #include "max6675.h"
@@ -33,12 +47,12 @@
 #include "TECLADO.h"
 
 //Instanciacion de objetos
-MAX6675 thermocouple1(CONFIG_TCSCK_PIN, CONFIG_TCCS_PIN, CONFIG_TCDO_PIN);
-MAX6675 thermocouple2(CONFIG_TCSCK_PIN, CONFIG_TCCS_PIN, CONFIG_TCDO_PIN);
-MAX6675 thermocouple3(CONFIG_TCSCK_PIN, CONFIG_TCCS_PIN, CONFIG_TCDO_PIN);
+MAX6675 thermocouple1(CONFIG_TERMO1_SCK_PIN, CONFIG_TERMO1_CS_PIN, CONFIG_TERMO1_DO_PIN);
+MAX6675 thermocouple2(CONFIG_TERMO1_SCK_PIN, CONFIG_TERMO1_CS_PIN, CONFIG_TERMO1_DO_PIN);
+MAX6675 thermocouple3(CONFIG_TERMO1_SCK_PIN, CONFIG_TERMO1_CS_PIN, CONFIG_TERMO1_DO_PIN);
 
 LiquidCrystal_I2Cmejorado lcd(0x27,16,2);
-Teclado4x4 teclado(28, 29, 23, 22, 26, 27, 24, 25, "789s456b123d.0ei");
+Teclado4x4 teclado(TECLADO_F1_PIN, TECLADO_F2_PIN, TECLADO_F3_PIN, TECLADO_F4_PIN, TECLADO_C1_PIN, TECLADO_C2_PIN, TECLADO_C3_PIN, TECLADO_C4_PIN, TECLADO_INPUT_STRING);
 
 //Valores constantes
 
@@ -112,32 +126,32 @@ void loop(){
             
             if ((tempActual1 > consignaTemp1) && (valorTermo1== HIGH )){
                 //Apagamos la resistencia1
-                digitalWrite(PIN_termo1,LOW);
+                digitalWrite(CALENTADOR1_PIN,LOW);
                 valorTermo1 = LOW;
             }
             if ((tempActual1 <= consignaTemp1) && (valorTermo1 == LOW )){
                 //Encendemos la resistencia1
-                digitalWrite(PIN_termo1,HIGH);
+                digitalWrite(CALENTADOR1_PIN,HIGH);
                 valorTermo1 = HIGH;
             }
             if ((tempActual2 > consignaTemp2) && (valorTermo2 == HIGH )){
                 //Apagamos la resistencia1
-                digitalWrite(PIN_termo2,LOW);
+                digitalWrite(CALENTADOR2_PIN,LOW);
                 valorTermo2 = LOW;
             }
             if ((tempActual2 <= consignaTemp2) && (valorTermo2 == LOW )){
                 //Encendemos la resistencia1
-                digitalWrite(PIN_termo2,HIGH);
+                digitalWrite(CALENTADOR2_PIN,HIGH);
                 valorTermo2 = HIGH;
             }
             if ((tempActual3 > consignaTemp3) && (valorTermo3 == HIGH )){
                 //Apagamos la resistencia1
-                digitalWrite(PIN_termo3,LOW);
+                digitalWrite(CALENTADOR3_PIN,LOW);
                 valorTermo3 = LOW;
             }
             if ((tempActual3 <= consignaTemp3) && (valorTermo3 == LOW )){
                 //Encendemos la resistencia1
-                digitalWrite(PIN_termo3,HIGH);
+                digitalWrite(CALENTADOR3_PIN,HIGH);
                 valorTermo3 = HIGH;
             }
         }
@@ -145,15 +159,15 @@ void loop(){
     else {
         //Apagamos la resistencia 1, 2 y 3 si procede
         if (valorTermo1 != LOW){ 
-            digitalWrite(PIN_termo1,LOW);
+            digitalWrite(CALENTADOR1_PIN,LOW);
             valorTermo1 = LOW;
             }
         if (valorTermo2 != LOW){ 
-            digitalWrite(PIN_termo2,LOW);
+            digitalWrite(CALENTADOR2_PIN,LOW);
             valorTermo2 = LOW;
             }
         if (valorTermo3 != LOW){ 
-            digitalWrite(PIN_termo3,LOW);
+            digitalWrite(CALENTADOR3_PIN,LOW);
             valorTermo3 = LOW;
             }     
     }
@@ -343,7 +357,7 @@ void loop(){
             pantallaSiguiente = 6;
             tecladoON = 1;
         break;
-         case 6: 
+        case 6: 
             estadoAnterior = 1;
             pantallaAnterior = 1;
             estadoSiguiente = 1;
