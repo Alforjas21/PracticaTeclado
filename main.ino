@@ -357,7 +357,7 @@ void loop(){
 
             pulsacion = 0;
             
-        case 4:
+        case 4: //MENU MANUAL CONSIGNA TEMPERATURA 
             estadoAnterior = 3;
             estadoSiguiente = 5;
             pantallaAnterior = 3;
@@ -366,7 +366,7 @@ void loop(){
             tecladoON = 1;
             pulsacion = 0;
         break;
-        case 5:
+        case 5: //MENU ¿COMENZAR OPERACIÓN?
 
             pulsacion = 0;
         break;
