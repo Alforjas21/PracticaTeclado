@@ -1,6 +1,6 @@
 //Codigo Principal Proyecto extrusor
 
-//Define
+//Defines
 #define PIN_termo1 7
 #define PIN_termo2 8
 #define PIN_termo3 9
@@ -26,13 +26,13 @@
 #define TECLADO_ABAJO 'b'
 #define TECLADO_PUNTO '.'
 
-//includes
+//Inclusiones
 #include "max6675.h"
 #include <Wire.h> 
 #include "LiquidCrystal_I2Cmejorado.h"
 #include "TECLADO.h"
 
-//Objetos
+//Instanciacion de objetos
 MAX6675 thermocouple1(CONFIG_TCSCK_PIN, CONFIG_TCCS_PIN, CONFIG_TCDO_PIN);
 MAX6675 thermocouple2(CONFIG_TCSCK_PIN, CONFIG_TCCS_PIN, CONFIG_TCDO_PIN);
 MAX6675 thermocouple3(CONFIG_TCSCK_PIN, CONFIG_TCCS_PIN, CONFIG_TCDO_PIN);
@@ -40,7 +40,7 @@ MAX6675 thermocouple3(CONFIG_TCSCK_PIN, CONFIG_TCCS_PIN, CONFIG_TCDO_PIN);
 LiquidCrystal_I2Cmejorado lcd(0x27,16,2);
 Teclado4x4 teclado(28, 29, 23, 22, 26, 27, 24, 25, "789s456b123d.0ei");
 
-//Valores estáticos
+//Valores constantes
 
 
 //variables globales 
@@ -78,12 +78,6 @@ void setup(){
     introMenu();
 }
 void loop(){
-    //if (digitalRead (LED_BUILTIN)>0) {digitalWrite(LED_BUILTIN,LOW);}
-    //else {digitalWrite(LED_BUILTIN,HIGH);}
-    //Serial.println (tiempoActual);
-    //delay (100);
-
-
 
     //guardar tiempo por loop (APS)
     APS = (millis() - tiempoActual);
@@ -387,70 +381,13 @@ void loop(){
 
 }
 
-
+//Funciones
 
 /////////////////////Pantalla inicial //////////////////////////////
 void introMenu(){ 
- lcd.clear();  // Borra el  LCD
- lcd.setCursor(2,0);         // Se posiciona en la Columna 3, Fila 0
+ lcd.clear();
+ lcd.setCursor(2,0);
  lcd.print("Garci-Extrusor:");
  lcd.setCursor(1,1);
  lcd.print("Cargando...");
 }
-/////////////////////Menu_1  //////////////////////////////////
-/* void menu1(){ 
-   lcd.homeNoDelay();
-   lcd.print("ON    >1  ");
-   lcd.setCursor(10,0);
-   lcd.print("OFF >2");   
-   lcd.setCursor(0,1);
-   lcd.print("INTER >3  "); 
-   lcd.setCursor(10,1);
-   lcd.print("MAS >ENT");
-}
-
-/////////////////////Menu_2  //////////////////////////////////
-void menu2(){ 
-   lcd.homeNoDelay();
-   lcd.print("LUZ  >1   ");
-   lcd.setCursor(8,0);
-   lcd.print("TIEMPO>2");
-   lcd.setCursor(0,1);
-   lcd.print("MENU >BACK       ");
-}
-/////////////////////accion_2  //////////////////////////////////
-void accion2(){ 
-  if(pulsacion == '1') contador=3;
-  if(pulsacion == '2') contador=4;
-  if(pulsacion == 'i') contador=1;
-}
-/////////////////////Menu_3  //////////////////////////////////
-void menu3(){ 
-   lcd.homeNoDelay();
-   lcd.print("LUZ :           ");
-   lcd.setCursor(5,0);
-   lcd.print(analogRead(A0));  
-   lcd.setCursor(0,1);
-   lcd.print("MENU>BACK   <--0");
-}
-/////////////////////accion_3  //////////////////////////////////
-void accion3(){ 
-  if(pulsacion == 'i') contador=1;
-  if(pulsacion == '0') contador=2;
-}
-/////////////////////Menu_4 //////////////////////////////////
-void menu4(){ 
-   unsigned long tiempo1 = (millis()/1000);  
-   lcd.homeNoDelay();
-   lcd.print("TIEMPO:            ");
-   lcd.setCursor(8,0);
-   lcd.print(tiempo1);  
-   lcd.setCursor(0,1);
-   lcd.print("MENU>BACK   <--0");
-}
-/////////////////////accion_4  //////////////////////////////////
-void accion4(){ 
-  if(pulsacion == 'i') contador=1;
-  if(pulsacion == '0') contador=2;
-}
- */
