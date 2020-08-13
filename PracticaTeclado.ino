@@ -377,6 +377,7 @@ void loop(){
             estadoSiguiente = 1;
             pantallaSiguiente = 1;
             tecladoON = 1;
+        break;
     }
 
 }
