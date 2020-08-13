@@ -8,15 +8,23 @@
 #define CONFIG_TCCS_PIN       11  // SPI CS
 #define CONFIG_TCDO_PIN       12  // SPI MISO
 
+#define factorConversion 300
+
 #define duracionIntro 4000
 #define periodoCalefaccion 1000
 #define debugMenu 1
 #define pantallaDelay 2
 
+
 #define FLECHA_ARRIBA 0x5E
 #define FLECHA_ABAJO 0x76
 #define FLECHA_IZQUIERDA 0x7F
 #define FLECHA_DERECHA 0x7E
+#define TECLADO_ENTER 'e'
+#define TECLADO_ATRAS 's'
+#define TECLADO_BORRAR 'i'
+#define TECLADO_ABAJO 'b'
+#define TECLADO_PUNTO '.'
 
 //includes
 #include "max6675.h"
@@ -40,13 +48,15 @@ unsigned long APS;
 unsigned long tiempoActual;
 unsigned long tiempoCalefaccion;
 unsigned long tiempoMenu;
-bool calefaccionON;
+bool calefaccionON, tecladoON, introducirVelocidad, introducirTemperatura;
 int8_t valorTermo1, valorTermo2, valorTermo3;
 float tempActual1, tempActual2, tempActual3;
 float consignaTemp1, consignaTemp2, consignaTemp3;
-int8_t pulsacion, nEntrada;
-int8_t estadoMenu, pantallaMenu;
-int consignaVelocidad;
+int8_t pulsacion, pantallaSiguiente, pantallaAnterior;
+int8_t estadoMenu, pantallaMenu, estadoAnterior, estadoSiguiente;
+//valor en milisegundos del retardo entre pasos del motor
+int consignaVelocidad, nEntrada; 
+
 
 
 
@@ -60,7 +70,7 @@ void setup(){
 
     //inicializar variables
     valorTermo1,valorTermo2, valorTermo3, consignaTemp1, consignaTemp2, 
-    consignaTemp3, calefaccionON, estadoMenu, consignaVelocidad = 0;
+    consignaTemp3, calefaccionON,tecladoON, estadoMenu, consignaVelocidad = 0;
     
     pinMode(LED_BUILTIN,OUTPUT);
     
@@ -153,16 +163,95 @@ void loop(){
             valorTermo3 = LOW;
             }     
     }
-
+    
     //Gestionar motor
     //Gestionar entrada usuario(Serie)
     //Gestionar entrada usuario (teclado)
     pulsacion=teclado.comprueba();
+    if (tecladoON) {
+    switch(pulsacion){ 
+                case TECLADO_ATRAS:
+                    estadoMenu = estadoAnterior;
+                    lcd.clearNoDelay();
+                    pantallaMenu = pantallaAnterior;
+                    tiempoMenu = tiempoActual;
+                    tecladoON = 0;
+                    pulsacion = 0;  
 
+                break;      
+                case '0':
+                    nEntrada = nEntrada*10;
+                    lcd.print(0);
+                break;
+                case '1':
+                    nEntrada = nEntrada*10 +1;
+                    lcd.print(1);
+                break;
+                case '2':
+                    nEntrada = nEntrada*10 +2;
+                    lcd.print(2);
+                break;
+                case '3':
+                    nEntrada = nEntrada*10 +3;
+                    lcd.print(3);
+                break;
+                case '4':
+                    nEntrada = nEntrada*10 +4;
+                    lcd.print(4);
+                break;
+                case '5':
+                    nEntrada = nEntrada*10 +5;
+                    lcd.print(5);
+                break;
+                case '6':
+                    nEntrada = nEntrada*10 +6;
+                    lcd.print(6);
+                break;
+                case '7':
+                    nEntrada = nEntrada*10 +7;
+                    lcd.print(7);
+                break;
+                case '8':
+                    nEntrada = nEntrada*10 +8;
+                    lcd.print(8);
+                break;
+                case '9':
+                    nEntrada = nEntrada*10 +9;
+                    lcd.print(9);
+                break;
+                case TECLADO_BORRAR:              
+                    nEntrada = nEntrada / 10;
+                    lcd.setCursor(0,1);
+                    lcd.print("        ");
+                    lcd.setCursor(0,1);
+                    if (nEntrada > 0) lcd.print(nEntrada);
+                break;
+                case TECLADO_ENTER:              
+                    estadoMenu = estadoSiguiente;
+                    if (introducirVelocidad){
+                    consignaVelocidad = factorConversion/nEntrada;  
+                    introducirVelocidad = 0;
+                    }
+                    if (introducirTemperatura){
+                    consignaTemp1, consignaTemp2, consignaTemp3 = nEntrada;  
+                    introducirTemperatura = 0;
+                    }
+                    nEntrada = 0;
+                    lcd.clearNoDelay();
+                    pantallaMenu = pantallaSiguiente;
+                    tiempoMenu = tiempoActual;
+                    tecladoON = 0;
+                    pulsacion = 0; 
+                break;
+            }
+        tiempoMenu = tiempoActual;
+        pulsacion = 0;
+    }
     
 
     //Gestionar salida pantalla
     switch(pantallaMenu) {
+        
         case 1:
             if (tiempoActual - tiempoMenu >= pantallaDelay) {
                 lcd.homeNoDelay();
@@ -177,6 +266,7 @@ void loop(){
         case 2:
             if (tiempoActual - tiempoMenu >= pantallaDelay) {
                 lcd.homeNoDelay();
+                lcd.print("Menu AUTO");
                 tiempoMenu = tiempoActual;
                 pantallaMenu = -1;
             }
@@ -191,8 +281,24 @@ void loop(){
                 lcd.setCursor(0,1);
                 tiempoMenu = tiempoActual;
                 pantallaMenu = -1;
-                
             }
+        break;
+        case 4:
+            if (tiempoActual - tiempoMenu >= pantallaDelay) {
+                lcd.homeNoDelay();
+                lcd.print("Introduce temp:");
+                lcd.setCursor(10,1);
+                lcd.print("BACK");
+                lcd.print(FLECHA_ARRIBA);
+                lcd.setCursor(0,1);
+                tiempoMenu = tiempoActual;
+                pantallaMenu = -1;
+            }
+
+        break;
+        case 5:
+
+
         break;
     }
     switch(estadoMenu) {
@@ -215,116 +321,36 @@ void loop(){
             lcd.clearNoDelay();
             pantallaMenu = 3;
             tiempoMenu = tiempoActual;
+            //tecladoON = 1;
             }
             pulsacion = 0;
         break;
         case 2: //MENU AUTO
-
-            if(pulsacion == 's') {estadoMenu = 1;
-            lcd.clearNoDelay();
-            pantallaMenu = 1;
-            tiempoMenu = tiempoActual;
-            }
-            //selección de distintos polímeros
+            estadoAnterior   = 1;
+            pantallaAnterior = 1;
+            tecladoON = 1;
             pulsacion = 0;
         break;
         case 3: //MENU MANUAL CONSIGNA VELOCIDAD MAX:14 caracteres
-            
-            switch(pulsacion){
-                case 's': 
-                    estadoMenu = 1;
-                    lcd.clearNoDelay();
-                    pantallaMenu = 1;
-                    tiempoMenu = tiempoActual;
-                break;
-                case '0':
-                    nEntrada = nEntrada*10;
-                    lcd.print(0);
-                    tiempoMenu = tiempoActual;
-
-                break;
-                case '1':
-                    nEntrada = nEntrada*10 +1;
-                    lcd.print(1);
-                    tiempoMenu = tiempoActual;
-
-                break;
-                case '2':
-                    nEntrada = nEntrada*10 +2;
-                    lcd.print(2);
-                    tiempoMenu = tiempoActual;
-
-                break;
-                case '3':
-                    nEntrada = nEntrada*10 +3;
-                    lcd.print(3);
-                    tiempoMenu = tiempoActual;
-
-                break;
-                case '4':
-                    nEntrada = nEntrada*10 +4;
-                    lcd.print(4);
-                    tiempoMenu = tiempoActual;
-
-                break;
-                case '5':
-                    nEntrada = nEntrada*10 +5;
-                    lcd.print(5);
-                    tiempoMenu = tiempoActual;
-
-                break;
-                case '6':
-                    nEntrada = nEntrada*10 +6;
-                    lcd.print(6);
-                    tiempoMenu = tiempoActual;
-
-                break;
-                case '7':
-                    nEntrada = nEntrada*10 +7;
-                    lcd.print(7);
-                    tiempoMenu = tiempoActual;
-
-                break;
-                case '8':
-                    nEntrada = nEntrada*10 +8;
-                    lcd.print(8);
-                    tiempoMenu = tiempoActual;
-
-                break;
-                case '9':
-                    nEntrada = nEntrada*10 +9;
-                    lcd.print(9);
-                    tiempoMenu = tiempoActual;
-
-                break;
-                case 'e':
-                    consignaVelocidad = nEntrada;
-                    estadoMenu = 4;
-                    lcd.clearNoDelay();
-                    pantallaMenu = 4;
-                    tiempoMenu = tiempoActual;
-
-                break;
-                case 'i':
-                    consignaVelocidad = nEntrada;
-                    
-                    nEntrada = nEntrada / 10;
-                    lcd.setCursor(0,1);
-                    lcd.print("        ");
-                    lcd.print(nEntrada);
-
-                    tiempoMenu = tiempoActual;
-
-                break;
-            
-            }
+            estadoAnterior    = 1;
+            pantallaAnterior  = 1;
+            estadoSiguiente   = 4;
+            pantallaSiguiente = 4;
+            introducirVelocidad = 1;
+            tecladoON = 1;
             pulsacion = 0;
-
-        break;
-        case 4:
+            
+        case 4: //MENU MANUAL CONSIGNA TEMPERATURA 
+            estadoAnterior = 3;
+            estadoSiguiente = 5;
+            pantallaAnterior = 3;
+            pantallaSiguiente = 5;
+            introducirTemperatura = 1;
+            tecladoON = 1;
             pulsacion = 0;
         break;
-        case 5:
+        case 5: //MENU ¿COMENZAR OPERACIÓN?
+
             pulsacion = 0;
         break;
         case 6:
@@ -345,6 +371,7 @@ void loop(){
     }
 
 }
+
 
 
 /////////////////////Pantalla inicial //////////////////////////////
