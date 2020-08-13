@@ -224,7 +224,7 @@ void loop(){
                     lcd.setCursor(0,1);
                     lcd.print("        ");
                     lcd.setCursor(0,1);
-                    lcd.print(nEntrada);
+                    if (nEntrada > 0) lcd.print(nEntrada);
                 break;
                 case TECLADO_ENTER:              
                     estadoMenu = estadoSiguiente;
@@ -296,6 +296,10 @@ void loop(){
             }
 
         break;
+        case 5:
+
+
+        break;
     }
     switch(estadoMenu) {
         case 0: //INTRODUCCION CON ESPERA
@@ -322,39 +326,18 @@ void loop(){
             pulsacion = 0;
         break;
         case 2: //MENU AUTO
-            estadoAnterior = 1;
+            estadoAnterior   = 1;
             pantallaAnterior = 1;
             tecladoON = 1;
-
-            /*if(pulsacion == TECLADO_ATRAS) {estadoMenu = 1;
-            lcd.clearNoDelay();
-            pantallaMenu = 1;
-            tiempoMenu = tiempoActual;
-            }*/
-            //selección de distintos polímeros
             pulsacion = 0;
         break;
         case 3: //MENU MANUAL CONSIGNA VELOCIDAD MAX:14 caracteres
-            estadoAnterior   = 1;
-            pantallaAnterior = 1;
+            estadoAnterior    = 1;
+            pantallaAnterior  = 1;
             estadoSiguiente   = 4;
             pantallaSiguiente = 4;
             introducirVelocidad = 1;
             tecladoON = 1;
-
-            /*if(pulsacion == TECLADO_ATRAS) {estadoMenu = 1;
-            lcd.clearNoDelay();
-            pantallaMenu = 1;
-            tiempoMenu = tiempoActual;
-            }
-            if(pulsacion == TECLADO_ENTER) {estadoMenu = 4;
-            consignaVelocidad = factorConversion/nEntrada;  
-            nEntrada = 0;
-            lcd.clearNoDelay();
-            pantallaMenu = 4;
-            tiempoMenu = tiempoActual;
-            }*/
-
             pulsacion = 0;
             
         case 4: //MENU MANUAL CONSIGNA TEMPERATURA 
