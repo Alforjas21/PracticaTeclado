@@ -117,7 +117,7 @@ void loop(){
 
 
     //Gestionar termopares
-    if (calefaccionON){
+    if (calefaccionON == 1){
          if (periodoCalefaccion <=(tiempoActual-tiempoCalefaccion)){
             tiempoCalefaccion = tiempoActual;
             tempActual1 = thermocouple1.readCelsius();
@@ -156,7 +156,7 @@ void loop(){
             }
         }
     }
-    if (!calefaccionON) {
+    if (calefaccionON == 0) {
         //Apagamos la resistencia 1, 2 y 3 si procede
         if (valorTermo1 != LOW){ 
             digitalWrite(CALENTADOR1_PIN,LOW);
@@ -185,6 +185,7 @@ void loop(){
                 lcd.clearNoDelay();
                 pantallaMenu = pantallaAnterior;
                 tecladoON,nEntrada = 0;
+                pulsacion = 0;
             break;      
             case '0':
                 nEntrada = nEntrada*10;
@@ -246,7 +247,9 @@ void loop(){
                 nEntrada = 0;
                 lcd.clearNoDelay();
                 pantallaMenu = pantallaSiguiente;
+                tiempoMenu = tiempoActual;
                 tecladoON = 0;
+                pulsacion = 0;
             break;
         }
         tiempoMenu = tiempoActual;
@@ -318,20 +321,24 @@ void loop(){
         break;
         case 1: //MENU SELECCION AUTO-MANUAL
             if(pulsacion == '1') {
+                estadoMenu = 0;
                 lcd.clearNoDelay();
-                pantallaMenu,estadoMenu = 2;
+                pantallaMenu = 2;
                 tiempoMenu = tiempoActual;
             }
             if(pulsacion == '2') {
+                estadoMenu = 3;
                 lcd.clearNoDelay();
-                pantallaMenu, estadoMenu = 3;
+                pantallaMenu= 3;
                 tiempoMenu = tiempoActual;
             }
+            pulsacion = 0;
         break;
         case 2: //MENU AUTO
             estadoAnterior   = 1;
             pantallaAnterior = 1;
             tecladoON = 1;
+            pulsacion = 0;
         break;
         case 3: //MENU MANUAL CONSIGNA VELOCIDAD MAX:14 caracteres
             estadoAnterior = 1;
@@ -340,6 +347,7 @@ void loop(){
             pantallaSiguiente = 4;
             introducirVelocidad = 1;
             tecladoON = 1;
+            pulsacion = 0;
         case 4: //MENU MANUAL CONSIGNA TEMPERATURA 
             estadoAnterior = 3;
             pantallaAnterior = 3;
@@ -347,50 +355,26 @@ void loop(){
             pantallaSiguiente = 5;
             introducirTemperatura = 1;
             tecladoON = 1;
+            pulsacion = 0;
         break;
         case 5: //MENU ¿COMENZAR OPERACIÓN?
-            estadoAnterior = 1;
-            pantallaAnterior = 1;
-            estadoSiguiente = 6;
-            pantallaSiguiente = 6;
-            tecladoON = 1;
+            pulsacion = 0;
         break;
         case 6: 
-            estadoAnterior = 1;
-            pantallaAnterior = 1;
-            estadoSiguiente = 1;
-            pantallaSiguiente = 1;
-            tecladoON = 1;
+            pulsacion = 0;
         break;        
         case 7: 
-            estadoAnterior = 1;
-            pantallaAnterior = 1;
-            estadoSiguiente = 1;
-            pantallaSiguiente = 1;
-            tecladoON = 1;
+            pulsacion = 0;
         break;        
         case 8: 
-            estadoAnterior = 1;
-            pantallaAnterior = 1;
-            estadoSiguiente = 1;
-            pantallaSiguiente = 1;
-            tecladoON = 1;
+            pulsacion = 0;
         break;        
         case 9: 
-            estadoAnterior = 1;
-            pantallaAnterior = 1;
-            estadoSiguiente = 1;
-            pantallaSiguiente = 1;
-            tecladoON = 1;
+            pulsacion = 0;
         break;        
         case 10: 
-            estadoAnterior = 1;
-            pantallaAnterior = 1;
-            estadoSiguiente = 1;
-            pantallaSiguiente = 1;
-            tecladoON = 1;
+            pulsacion = 0;
         break;
-        pulsacion = 0;
     }
 
 }
