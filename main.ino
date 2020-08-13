@@ -48,14 +48,14 @@ unsigned long APS;
 unsigned long tiempoActual;
 unsigned long tiempoCalefaccion;
 unsigned long tiempoMenu;
-bool calefaccionON, tecladoON;
+bool calefaccionON, tecladoON, introducirVelocidad, introducirTemperatura;
 int8_t valorTermo1, valorTermo2, valorTermo3;
 float tempActual1, tempActual2, tempActual3;
 float consignaTemp1, consignaTemp2, consignaTemp3;
-int8_t pulsacion, nEntrada;
-int8_t estadoMenu, pantallaMenu;
+int8_t pulsacion, pantallaSiguiente, pantallaAnterior;
+int8_t estadoMenu, pantallaMenu, estadoAnterior, estadoSiguiente;
 //valor en milisegundos del retardo entre pasos del motor
-int consignaVelocidad; 
+int consignaVelocidad, nEntrada; 
 
 
 
@@ -169,7 +169,16 @@ void loop(){
     //Gestionar entrada usuario (teclado)
     pulsacion=teclado.comprueba();
     if (tecladoON) {
-    switch(pulsacion){       
+    switch(pulsacion){ 
+                case TECLADO_ATRAS:
+                    estadoMenu = estadoAnterior;
+                    lcd.clearNoDelay();
+                    pantallaMenu = pantallaAnterior;
+                    tiempoMenu = tiempoActual;
+                    tecladoON = 0;
+                    pulsacion = 0;  
+
+                break;      
                 case '0':
                     nEntrada = nEntrada*10;
                     lcd.print(0);
@@ -217,6 +226,23 @@ void loop(){
                     lcd.setCursor(0,1);
                     lcd.print(nEntrada);
                 break;
+                case TECLADO_ENTER:              
+                    estadoMenu = estadoSiguiente;
+                    if (introducirVelocidad){
+                    consignaVelocidad = factorConversion/nEntrada;  
+                    introducirVelocidad = 0;
+                    }
+                    if (introducirTemperatura){
+                    consignaTemp1, consignaTemp2, consignaTemp3 = nEntrada;  
+                    introducirTemperatura = 0;
+                    }
+                    nEntrada = 0;
+                    lcd.clearNoDelay();
+                    pantallaMenu = pantallaSiguiente;
+                    tiempoMenu = tiempoActual;
+                    tecladoON = 0;
+                    pulsacion = 0; 
+                break;
             }
         tiempoMenu = tiempoActual;
         pulsacion = 0;
@@ -225,6 +251,7 @@ void loop(){
 
     //Gestionar salida pantalla
     switch(pantallaMenu) {
+        
         case 1:
             if (tiempoActual - tiempoMenu >= pantallaDelay) {
                 lcd.homeNoDelay();
@@ -239,6 +266,7 @@ void loop(){
         case 2:
             if (tiempoActual - tiempoMenu >= pantallaDelay) {
                 lcd.homeNoDelay();
+                lcd.print("Menu AUTO");
                 tiempoMenu = tiempoActual;
                 pantallaMenu = -1;
             }
@@ -289,23 +317,32 @@ void loop(){
             lcd.clearNoDelay();
             pantallaMenu = 3;
             tiempoMenu = tiempoActual;
-            tecladoON = 1;
+            //tecladoON = 1;
             }
             pulsacion = 0;
         break;
         case 2: //MENU AUTO
+            estadoAnterior = 1;
+            pantallaAnterior = 1;
+            tecladoON = 1;
 
-            if(pulsacion == TECLADO_ATRAS) {estadoMenu = 1;
+            /*if(pulsacion == TECLADO_ATRAS) {estadoMenu = 1;
             lcd.clearNoDelay();
             pantallaMenu = 1;
             tiempoMenu = tiempoActual;
-            }
+            }*/
             //selección de distintos polímeros
             pulsacion = 0;
         break;
         case 3: //MENU MANUAL CONSIGNA VELOCIDAD MAX:14 caracteres
-            
-            if(pulsacion == TECLADO_ATRAS) {estadoMenu = 1;
+            estadoAnterior   = 1;
+            pantallaAnterior = 1;
+            estadoSiguiente   = 4;
+            pantallaSiguiente = 4;
+            introducirVelocidad = 1;
+            tecladoON = 1;
+
+            /*if(pulsacion == TECLADO_ATRAS) {estadoMenu = 1;
             lcd.clearNoDelay();
             pantallaMenu = 1;
             tiempoMenu = tiempoActual;
@@ -316,14 +353,21 @@ void loop(){
             lcd.clearNoDelay();
             pantallaMenu = 4;
             tiempoMenu = tiempoActual;
-            }
+            }*/
 
             pulsacion = 0;
             
         case 4:
+            estadoAnterior = 3;
+            estadoSiguiente = 5;
+            pantallaAnterior = 3;
+            pantallaSiguiente = 5;
+            introducirTemperatura = 1;
+            tecladoON = 1;
             pulsacion = 0;
         break;
         case 5:
+
             pulsacion = 0;
         break;
         case 6:
