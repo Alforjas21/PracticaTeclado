@@ -1,0 +1,28 @@
+{
+    "configurations": [
+        {
+            "name": "Win32",
+            "includePath": [
+                "${workspaceFolder}/**",
+                "<path>",
+                "<path>\\tools\\**",
+                "<path>\\hardware\\arduino\\avr\\**",
+                "<path>\\hardware\\tools\\**",
+                "<path>\\hardware\\arduino\\avr\\cores\\arduino"
+            ],
+            "defines": [
+                "_DEBUG",
+                "UNICODE",
+                "_UNICODE",
+                "USBCON"
+            ],
+            "forcedInclude": [
+                "<path>\\hardware\\arduino\\avr\\cores\\arduino\\Arduino.h"
+            ],
+            "intelliSenseMode": "msvc-x64",
+            "cStandard": "c11",
+            "cppStandard": "c++17"
+        }
+    ],
+    "version": 4
+}
