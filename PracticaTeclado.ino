@@ -34,6 +34,7 @@
 #define periodoCalefaccion 1000
 #define debugMenu 1
 #define pantallaDelay 2
+#define pasos 200
 
 
 #define FLECHA_ARRIBA    0x5E
@@ -41,10 +42,10 @@
 #define FLECHA_IZQUIERDA 0x7F
 #define FLECHA_DERECHA   0x7E
 #define TECLADO_ENTER  'e'
-#define TECLADO_ATRAS  's'
+#define TECLADO_ATRAS  '.'
 #define TECLADO_BORRAR 'i'
 #define TECLADO_ABAJO  'b'
-#define TECLADO_PUNTO  '.'
+#define TECLADO_ARRIBA 's'
 #define TECLADO_INPUT_STRING "789s456b123d.0ei"
 
 //includes
@@ -52,6 +53,7 @@
 #include <Wire.h> 
 #include "LiquidCrystal_I2Cmejorado.h"
 #include "TECLADO.h"
+
 
 //Objetos
 MAX6675 thermocouple1(CONFIG_TERMO1_SCK_PIN, CONFIG_TERMO1_CS_PIN, CONFIG_TERMO1_DO_PIN);
@@ -77,8 +79,14 @@ float consignaTemp1, consignaTemp2, consignaTemp3;
 int8_t pulsacion, pantallaSiguiente, pantallaAnterior;
 int8_t estadoMenu, pantallaMenu, estadoAnterior, estadoSiguiente;
 //valor en milisegundos del retardo entre pasos del motor
-int consignaVelocidad, nEntrada, velocidad;
-
+int consignaVelocidad, nEntrada, velocidad, i;
+struct valorPredefinido
+{
+    String nombre;
+    int consignaTemperatura;
+    int consignaVelocidad;
+};
+valorPredefinido preset[6];
 
 
 void setup(){
@@ -87,10 +95,20 @@ void setup(){
     lcd.backlight();
     Serial.begin(9600);
     teclado.configura();
+    
+    //inicializar motor
+    pinMode(CONFIG_MOTOR_PSO_PIN, OUTPUT);
+    pinMode(CONFIG_MOTOR_DIR_PIN, OUTPUT);
 
     //inicializar variables
     valorTermo1,valorTermo2, valorTermo3, consignaTemp1, consignaTemp2, 
     consignaTemp3, calefaccionON, leerValor, estadoMenu, consignaVelocidad = 0;
+    preset[0] = {"PLA           ",220,60};
+    preset[1] = {"ABS           ",260,60};
+    preset[2] = {"PET           ",250,60};
+    preset[3] = {"NYLON         ",260,60};
+    preset[4] = {"POLICARBONATO ",310,60};
+    preset[5] = {"POLIPROPILENO ",220,60};
     
     pinMode(LED_BUILTIN,OUTPUT);
     
@@ -103,8 +121,6 @@ void loop(){
     //Serial.println (tiempoActual);
     //delay (100);
 
-
-
     //guardar tiempo por loop (APS)
     APS = (millis() - tiempoActual);
     if (Serial) {
@@ -115,7 +131,7 @@ void loop(){
     //registrar tiempo actual
     tiempoActual = millis();
 
-    digitalWrite(LED_BUILTIN, estadoMenu == 6);
+    //digitalWrite(LED_BUILTIN, estadoMenu == 6);
 
     //control de errores: variables
     if (Serial){
@@ -252,7 +268,7 @@ void loop(){
                 tiempoMenu = tiempoActual;
                 leerValor = 0;
                 pulsacion = 0; 
-                break;
+            break;
             case TECLADO_ATRAS:
                 estadoMenu = estadoAnterior;
                 lcd.clearNoDelay();
@@ -265,7 +281,6 @@ void loop(){
         tiempoMenu = tiempoActual;
         pulsacion = 0;
     }
-    
 
     //Gestionar salida pantalla
     switch(pantallaMenu) {
@@ -283,11 +298,13 @@ void loop(){
             if (tiempoActual - tiempoMenu >= pantallaDelay) {
                 lcd.homeNoDelay();
                 lcd.print("Menu AUTO");
-
-                leerValor = 1;
-
+                lcd.setCursor(0,1);
+                lcd.print(i+1);
+                lcd.print(" ");
+                lcd.print(preset[i].nombre);
                 tiempoMenu = tiempoActual;
                 pantallaMenu = -1;
+                i = 0;
             }
         break;
         case 3:
@@ -348,7 +365,17 @@ void loop(){
         case 7:
             if (tiempoActual - tiempoMenu >= pantallaDelay) {
                 lcd.homeNoDelay();
-                lcd.print("DETENER PROCESO?");
+                lcd.print("PAUSAR PROCESO?");
+                lcd.setCursor(0,1);
+                lcd.print("SI>   1|NO>    2");
+                tiempoMenu   = tiempoActual;
+                pantallaMenu = -1;
+            }
+        break;
+        case 8:
+            if (tiempoActual - tiempoMenu >= pantallaDelay) {
+                lcd.homeNoDelay();
+                lcd.print("REANUDAR PROCESO?");
                 lcd.setCursor(0,1);
                 lcd.print("SI>   1|NO>    2");
                 tiempoMenu   = tiempoActual;
@@ -380,9 +407,40 @@ void loop(){
             pulsacion = 0;
         break;
         case 2: //MENU AUTO
-            estadoAnterior   = 1;
-            pantallaAnterior = 1;
-            //leerValor      = 1;
+            if(pulsacion == TECLADO_ATRAS) {
+                estadoMenu = 1;
+                lcd.clearNoDelay();
+                pantallaMenu = 1;
+                tiempoMenu = tiempoActual;
+            }
+            if(pulsacion == 's' && tiempoActual - tiempoMenu >= pantallaDelay) {
+                lcd.setCursor(0,1);
+                i--;
+                if(i == -1) i = 5;
+                i = i%6;
+                lcd.print(i+1);
+                lcd.print(" ");
+                lcd.print(preset[i].nombre);
+                tiempoMenu = tiempoActual;
+            }
+            if(pulsacion == 'b' && tiempoActual - tiempoMenu >= pantallaDelay) {
+                lcd.setCursor(0,1);
+                i++;
+                i = i%6;
+                lcd.print(i+1);
+                lcd.print(" ");
+                lcd.print(preset[i].nombre);
+                tiempoMenu = tiempoActual;
+            }
+            if(pulsacion == TECLADO_ENTER) {
+                consignaTemp1, consignaTemp2, consignaTemp3 = preset[i].consignaTemperatura;
+                consignaVelocidad = factorConversion/preset[i].consignaVelocidad;
+                estadoMenu = 9;
+                lcd.clearNoDelay();
+                pantallaMenu = 5;
+                tiempoMenu = tiempoActual;
+                i = 0;
+            }
             pulsacion        = 0;
         break;
         case 3: //MENU MANUAL CONSIGNA VELOCIDAD MAX:14 caracteres
@@ -425,33 +483,57 @@ void loop(){
             pulsacion     = 0;
             calefaccionON = 1;
         break;
-        case 7: //¿DETENEMOS EL MOTOR Y HEATERS?
-            if(pulsacion == '1') {estadoMenu = 1;
-            lcd.clearNoDelay();
-            pantallaMenu = 1;
-            tiempoMenu = tiempoActual;
+        case 7: //¿PAUSAMOS EL MOTOR Y HEATERS?
+            if(pulsacion == '1') {estadoMenu = 8;
+                lcd.clearNoDelay();
+                pantallaMenu = 8;
+                tiempoMenu = tiempoActual;
             }
             if(pulsacion == '2') {estadoMenu = 6;
+                lcd.clearNoDelay();
+                pantallaMenu = 6;
+                tiempoMenu = tiempoActual;
+            }
+            pulsacion = 0;
+        break;
+        case 8: //PROCESO: DETENEMOS MOTOR Y HEATERS, ¿REANUDAR PROCESO O FINALIZAR?
+            calefaccionON = 0;
+            //detenemos motor
+            if(pulsacion == '1') {estadoMenu = 6; //FINALIZAR
+                lcd.clearNoDelay();
+                pantallaMenu = 6;
+                tiempoMenu = tiempoActual;
+            }
+            if(pulsacion == '2') {estadoMenu = 1; //REANUDAR
+                lcd.clearNoDelay();
+                pantallaMenu = 1;
+                tiempoMenu = tiempoActual;
+            }
+            pulsacion = 0;
+        break;
+        case 9: //MENU ¿COMENZAR OPERACIÓN AUTO?
+            if(pulsacion == '1') {estadoMenu = 6;
             lcd.clearNoDelay();
             pantallaMenu = 6;
             tiempoMenu = tiempoActual;
             }
+            if(pulsacion == '2') {estadoMenu = 2;
+            lcd.clearNoDelay();
+            pantallaMenu = 2;
+            tiempoMenu = tiempoActual;
+            }
             pulsacion = 0;
         break;
-        case 8: //PROCESO: DETENEMOS MOTOR Y HEATERS
-
-        break;     
     }
-
 }
-
-
 
 /////////////////////Pantalla inicial //////////////////////////////
-void introMenu(){ 
- lcd.clear();  // Borra el  LCD
- lcd.setCursor(2,0);         // Se posiciona en la Columna 3, Fila 0
- lcd.print("Garci-Extrusor:");
- lcd.setCursor(1,1);
- lcd.print("Cargando...");
+void introMenu() { 
+    lcd.clear();  // Borra el  LCD
+    lcd.setCursor(2,0);         // Se posiciona en la Columna 3, Fila 0
+    lcd.print("Garci-Extrusor:");
+    lcd.setCursor(1,1);
+    lcd.print("Cargando...");
 }
+
+
