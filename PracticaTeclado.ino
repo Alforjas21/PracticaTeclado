@@ -73,6 +73,7 @@ LiquidCrystal_I2Cmejorado lcd(direccionLCD,columnasLCD,filasLCD);
 Teclado4x4 teclado(TECLADO_F1_PIN, TECLADO_F2_PIN, TECLADO_F3_PIN, TECLADO_F4_PIN, TECLADO_C1_PIN, TECLADO_C2_PIN, TECLADO_C3_PIN, TECLADO_C4_PIN, TECLADO_INPUT_STRING);
 
 //variables globales
+char refreshDebugChar=64;
 static String cadenaSalida="                    ";
 unsigned long tiempoLoop;
 static unsigned long tiempoActual,tiempoActualMicro;
@@ -489,6 +490,8 @@ void loop(){
                 lcd.print("C");
                 lcd.setCursor(11,3);
                 lcd.print("FIN > ENT");
+                lcd.print(refreshDebugChar);
+                refreshDebugChar = (refreshDebugChar>=90) ? 64:refreshDebugChar+1;
                 tiempoMenu       = tiempoActual;
                 tiempoProcesando = tiempoActual;
                 pantallaMenu = -1;
